@@ -17,7 +17,8 @@ when 'debian'
   include_recipe 'apt::default'
 
   # Debian 7.0 or lower need the repo (wheezy)
-  if Chef::VersionConstraint.new("<= 7.0").include?(node['platform_version'])
+  if !(/[^ ].*\/sid/  =~ node['platform_version']) && # exclude sid
+      Chef::VersionConstraint.new("<= 7.0").include?(node['platform_version'])
     # May not be needed in modern ubuntu, debian.
     apt_repository 'mosquitto' do
       uri          'http://repo.mosquitto.org/debian'
