@@ -4,8 +4,10 @@ bridge_options = %w{ connection address cleansession try_private username passwo
 %>
 
 <% 
-options.select{|x|node['mosquitto'].has_key(x)}.each do |option|
-  puts "#{option} #{node['mosquitto'][option]}"
+options.each do |option|
+  if node['mosquitto'].has_key?(option)
+    puts "#{option} #{node['mosquitto'][option]}"
+  end
 end
 %>
 
@@ -18,18 +20,25 @@ log_type information
 log_type all
 log_type debug
 
-<% node['mosquitto']['listeners'].each do |listener| %>
+log_timestamp true
+
+<% if node['mosquitto'].has_key?('listeners')
+     node['mosquitto']['listeners'].each do |listener| %>
 listener <%= [listener[:port], listener[:addr]].compact.join(" ") %>
 <% end %>
 
-<% 
-node['mosquitto']['bridges'].each do |bridge|
-  bridge_options.select{|x|bridge.has_key(x)}.each do |key| 
-    puts "#{key} #{bridge[key]}"
-  end
+<% if node['mosquitto'].has_key?('bridges')
+     bridge_options.each do |key|
+       if node['mosquitto']['bridge'].has_key?(key)
+         puts "#{key} #{node['mosquitto']['bridge'][key]}"
+       end
+     end
 
-  bridge['topics'].each do |topic|
-    puts "topic #{topic}"
+     if node['mosquitto']['bridges'].has_key?('topics')
+       node['mosquitto']['bridges']['topics'].each do |topic|
+         puts "topic #{topic}"
+       end
+     end
   end
 end
 %>
