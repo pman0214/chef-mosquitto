@@ -7,7 +7,7 @@ end
 template "/etc/mosquitto/mosquitto.conf" do
   source "mosquitto.conf.erb"
 
-  mode 0640
+  mode 0644
 
   notifies :reload, "service[mosquitto]"
 end
